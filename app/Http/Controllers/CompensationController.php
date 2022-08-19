@@ -6,15 +6,21 @@ use App\Models\Compensation;
 use Illuminate\Http\Request;
 
 class CompensationController extends Controller
-{
+
+{   
+    //Get all Compensation Data
     public function index(){
         $compensation = Compensation::all();
         return ($compensation);
     }
 
+        // store new compensation Data
     public function store(Request $request){
         try {
+            //instantiate
             $compensation = new Compensation();
+
+            //load requests accordingly
             $compensation->age = $request->age;
             $compensation->industry = $request->industry;
             $compensation->role = $request->role;
@@ -25,6 +31,7 @@ class CompensationController extends Controller
             $compensation->additionalContents = $request->additionalContents;
             $compensation->other = $request->other;
             
+            //save to db
             if ($compensation ->save()){
                 return response()->json(['status'=> 'success', 'message' => 'Compensation submitted successfully ']);
             }   
@@ -65,21 +72,30 @@ class CompensationController extends Controller
         $result = Compensation::where('loc', 'LIKE', '%'. $loc. '%')->get('annualSalary');
         $result_array= json_decode($result, TRUE);
         $num=0;
-
-        foreach ($result_array as $annualSalary)
-        {
-        $num++; 
-        
-        foreach ($annualSalary as $key=>$value)
-        {
-            $string = preg_replace('/[^0-9]/', '', $value);
-            array_push($a,$string);
-        } 
-        $minimum= min($a);    
+        try{
+            foreach ($result_array as $annualSalary)
+            {
+                //counter
+                $num++; 
+                
+                foreach ($annualSalary as $key=>$value)
+                {
+                    //remove unwanted char
+                    $string = preg_replace('/[^0-9]/', '', $value);
+                    array_push($a,$string);
+                } 
+                //using the Min function
+                $minimum= min($a);    
+            }
+            
+            return "Minimum Compensation for ".$loc ." is -- $" . $minimum. "<br>" . $num. " total city(s) found";
+    
         }
-        return "Minimum Compensation for ".$loc ." is -- $" . $minimum. "<br>" . $num. " total city(s) found";
-
+        catch (\Exception $e){
+            return response()->json(['status'=> 'error', 'message' =>$e->getMessage() . " or " . "please check spelling"]);
+        }
     }
+
 
     function maxComp($loc)
     {   
@@ -88,21 +104,25 @@ class CompensationController extends Controller
         $result_array= json_decode($result, TRUE);
         $num=0;
 
-        foreach ($result_array as $annualSalary)
-        {
-        $num++; 
-        
-        foreach ($annualSalary as $key=>$value)
-        {
+        try{
+            foreach ($result_array as $annualSalary)
+            {
+                $num++; 
             
-            $string = preg_replace('/[^0-9]/', '', $value);
-            array_push($a,$string);
+                foreach ($annualSalary as $key=>$value)
+                { 
+                    $string = preg_replace('/[^0-9]/', '', $value);
+                    array_push($a,$string);
+                }
+                //using the max function
+                    $maximum = max($a);
+            }
+                return "Maximum Compensation for ".$loc ." is -- $" . $maximum . "<br>" . $num. " total city(s) found";
         }
-        $maximum = max($a);
+        catch (\Exception $e){
+            return response()->json(['status'=> 'error', 'message' =>$e->getMessage() . " or " . "please check spelling"]);
         }
-        return "Maximum Compensation for ".$loc ." is -- $" . $maximum . "<br>" . $num. " total city(s) found";
-
-    }
+}
 
     function averageComp($loc)
     {   
@@ -111,17 +131,15 @@ class CompensationController extends Controller
         $result_array= json_decode($result, TRUE);
         $num=0;
 
+        try{
         foreach ($result_array as $annualSalary)
         {
         $num++; 
         
         foreach ($annualSalary as $key=>$value)
-        {
-            
+        {     
             $string = preg_replace('/[^0-9]/', '', $value);
             array_push($a,$string);
-
-
         }
         $a_count = count($a);
         $a_sum = array_sum($a);
@@ -130,22 +148,108 @@ class CompensationController extends Controller
         echo "Average Compensation for ".$loc ." is $" . $mean_average . "<br>" . $num. " total city(s) found";
 
     }
-    
+    //catch errors and return
+    catch (\Exception $e){
+        return response()->json(['status'=> 'error', 'message' =>$e->getMessage() . " or " . "please check spelling"]);
+    }
+}
+    //delete given data
     public function destroy($id)
     {
         try {
             $compensation = Compensation::findOrFail($id);
-            
-
             if ($compensation ->delete()){
                 return response()->json(['status'=> 'success', 'message' => 'Compensation deleted  successfully ']);
-            }
-            
+            }  
         }  
         catch (\Exception $e){
-            return response()->json(['status'=> 'error', 'message' => $e->getMessage()]);
+            return response()->json(['status'=> 'error', 'message' => $e->getMessage() . " or " . "please check spelling"]);
         }
     }
+
+   
+  
+    public function retriveComp($role)
+    {   
+        $a=[];
+        $result = Compensation::where('role', 'LIKE', '%'. $role. '%')->get('annualSalary');
+        $result_array= json_decode($result, TRUE);
+        $num=0;
+        try{
+            foreach ($result_array as $annualSalary)
+            {
+                $num++; 
+
+                foreach ($annualSalary as $key=>$value)
+                {
+                    array_push($a,$value);
+                    return ($a) ;
+                }
+            }
+        }
+        catch (\Exception $e){
+            return response()->json(['status'=> 'error', 'message' => $e->getMessage() . " or " . "please check spelling"]);
+        }
+    }
+
+    public function pagiSortFil(Request $request)
+    {
+        try{
+            $search =  $request->input('value');
+            if($search!=""){
+                $sorted = Compensation::where(function ($query) use ($search){
+                    $query->where('loc', 'like', '%'.$search.'%')
+                        ->orWhere('currencyType', 'like', '%'.$search.'%')
+                        ->orWhere('age', 'like', '%'.$search.'%');
+                })
+                ->paginate(50);
+                $sorted->appends(['value' => $search]);
+            }
+            else{
+                    $sorted = Compensation::paginate(10);
+            }
+            return ($sorted);
+        }
+        catch (\Exception $e){
+            return response()->json(['status'=> 'error', 'message' => $e->getMessage() . " or " . "please check spelling"]);
+        }
+    }
+
+    public function sparce(Request $request)
+    {
+        //requested search fields
+        $search =  $request->input('value');
+        $search2 =  $request->input('value2');
+        $search3 =  $request->input('value3');
+        $search4 =  $request->input('value3');
+
+        $a=[];
+        //get array key from a sample (index 1 element) output
+        $key = Compensation::findOrFail(1);
+        $key= json_decode($key, TRUE);
+        $num=0;
+        
+            foreach ($key as $val){
+                    $num++; 
+                    
+                    foreach ($key as $keys=>$value)
+                    {
+                        array_push($a,$keys);    
+                    }
+            }
+            // load and search through DB, return data with match
+            if($search!=""){
+                    $result = Compensation::where($a['4'], 'LIKE', "%{$search}%")
+                                            ->where($a['5'], 'LIKE', "%{$search2}%")
+                                            ->where($a['6'], 'LIKE', "%{$search3}%")
+                                            ->where($a['7'], 'LIKE', "%{$search4}%")->get();
+                    }    
+                   
+                    return ($result);
+        
+        
+    }
+
 
     public function importCompensationData(Request $request) {
         $data           =       array();
@@ -172,93 +276,14 @@ class CompensationController extends Controller
                         "additionalContents" => $row["8"],
                         "other" => $row["9"],
                     );
-
-
                         $compensation = Compensation::create($compensationData);
                         if(!is_null($compensation)) {
                             $data["status"]     =       "success";
-                            $data["message"]    =       "Leads imported successfully";
+                            $data["message"]    =       "Data imported successfully";
                         }                        
-
         }
 
         return $data["status"];
     }
-
-
-    
-function retriveComp($role)
-    {   
-        $a=[];
-        $result = Compensation::where('role', 'LIKE', '%'. $role. '%')->get('annualSalary');
-        $result_array= json_decode($result, TRUE);
-        $num=0;
-
-        foreach ($result_array as $annualSalary)
-        {
-        $num++; 
-        
-        foreach ($annualSalary as $key=>$value)
-        {
-            array_push($a,$value);
-            return ($a) ;
-        }
-  
-        }
-    }
-
-    public function pagiSortFil(Request $request)
-    {
-        $search =  $request->input('value');
-        if($search!=""){
-            $sorted = Compensation::where(function ($query) use ($search){
-                $query->where('loc', 'like', '%'.$search.'%')
-                    ->orWhere('currencyType', 'like', '%'.$search.'%')
-                    ->orWhere('age', 'like', '%'.$search.'%');
-            })
-            ->paginate(50);
-            $sorted->appends(['value' => $search]);
-        }
-        else{
-            $sorted = Compensation::paginate(10);
-        }
-        return ($sorted);
-    }
-
-    public function sparce(Request $request)
-    {
-        $search =  $request->input('value');
-        $search2 =  $request->input('value2');
-        $search3 =  $request->input('value3');
-        $search4 =  $request->input('value3');
-
-        $a=[];
-        $key = Compensation::findOrFail(1);
-        $key= json_decode($key, TRUE);
-        $num=0;
-
-        foreach ($key as $val)
-        {
-        $num++; 
-        
-        foreach ($key as $keys=>$value)
-        {
-            array_push($a,$keys);
-            
-        }
-        }
-
-        if($search!=""){
-            $result = Compensation::where($a['4'], 'LIKE', "%{$search}%")
-                                    ->where($a['5'], 'LIKE', "%{$search2}%")
-                                    ->where($a['6'], 'LIKE', "%{$search3}%")
-                                    ->where($a['7'], 'LIKE', "%{$search4}%")->get();
-        }
-        
-        else{
-        }
-        return ($result);
-    }
-
 
 }
