@@ -20,11 +20,7 @@ class Compensation extends Model
         'additionalContents',
         'other',
     ];
-    public $sortable = ['age',
-                        'industry',
-                        'role',
-                        'loc',
-                        'yearOfExperince'];
+
 
 
 public function employee()

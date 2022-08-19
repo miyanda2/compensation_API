@@ -61,8 +61,8 @@ $app->singleton(
 |
 */
 
-$app->configure('auth');
-$app->configure('mail');
+// $app->configure('auth');
+// $app->configure('mail');
 $app->configure('services');
 $app->configure('config');
 // $app->configure('permission');

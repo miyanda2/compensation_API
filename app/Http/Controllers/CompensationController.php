@@ -3,21 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Compensation;
-use App\Models\Employee;
-use App\Models\UploadCompensationdata;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class CompensationController extends Controller
 {
-
-   
-
     public function index(){
         $compensation = Compensation::all();
         return ($compensation);
     }
-
 
     public function store(Request $request){
         try {
@@ -31,12 +24,10 @@ class CompensationController extends Controller
             $compensation->yearOfExperince = $request->yearOfExperince;
             $compensation->additionalContents = $request->additionalContents;
             $compensation->other = $request->other;
-
-            //H:i:s
+            
             if ($compensation ->save()){
                 return response()->json(['status'=> 'success', 'message' => 'Compensation submitted successfully ']);
-            }
-            
+            }   
         }  
         catch (\Exception $e){
             return response()->json(['status'=> 'error', 'message' => $e->getMessage()]);
@@ -81,13 +72,10 @@ class CompensationController extends Controller
         
         foreach ($annualSalary as $key=>$value)
         {
-            
             $string = preg_replace('/[^0-9]/', '', $value);
             array_push($a,$string);
-        }
-       
-        $minimum= min($a);
-        // dd(gettype($a));
+        } 
+        $minimum= min($a);    
         }
         return "Minimum Compensation for ".$loc ." is -- $" . $minimum. "<br>" . $num. " total city(s) found";
 
@@ -243,7 +231,7 @@ function retriveComp($role)
         $search2 =  $request->input('value2');
         $search3 =  $request->input('value3');
         $search4 =  $request->input('value3');
-        $search5 =  $request->input('value3');
+
         $a=[];
         $key = Compensation::findOrFail(1);
         $key= json_decode($key, TRUE);
@@ -252,14 +240,12 @@ function retriveComp($role)
         foreach ($key as $val)
         {
         $num++; 
-        // dd($key);
         
         foreach ($key as $keys=>$value)
         {
             array_push($a,$keys);
             
         }
-        // dd ($a['1']) ;
         }
 
         if($search!=""){
@@ -267,11 +253,9 @@ function retriveComp($role)
                                     ->where($a['5'], 'LIKE', "%{$search2}%")
                                     ->where($a['6'], 'LIKE', "%{$search3}%")
                                     ->where($a['7'], 'LIKE', "%{$search4}%")->get();
-            // $sorted->appends(['value' => $search]);
         }
         
         else{
-            // $sorted = "Not found";
         }
         return ($result);
     }
