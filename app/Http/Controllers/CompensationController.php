@@ -113,7 +113,15 @@ class CompensationController extends Controller
     function avgCompRole($role)
     {   
         $a=[];
+        $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~','20', '%'];
+
+        //replace resevered strings, to make word searchable
+        $role = str_replace($reservedSymbols, '%', $role);
+        
+        //search $role and return its annual salary
         $result = Compensation::where('role', 'LIKE', '%'. $role. '%')->get('annualSalary');
+        
+        //decode to json
         $result_array= json_decode($result, TRUE);
         $num=0;
 
@@ -130,7 +138,11 @@ class CompensationController extends Controller
             $a_count = count($a);
             $a_sum = array_sum($a);
             $mean_average_role = $a_sum / $a_count;
+
+            //replace % with empty space eg office%manager----office manager
+            $role = str_replace($reservedSymbols, ' ', $role);
         }
+        
         return response()->json($role=['Role'=> $role, 'Count' =>$a_count, 'Average'=>$mean_average_role]);
 
         }
@@ -164,26 +176,28 @@ class CompensationController extends Controller
         }
     }
 
-    //Fetch a single record via GET request. Return a sparce fieldset (e.g. /compensation_data?fields=first_name,last_name,salary)
+//Fetch a single record via GET request. Return a sparce fieldset (e.g. /compensation_data?fields=first_name,last_name,salary)
     public function sparce(Request $request)
     {
         //requested search fields
-        $search =  $request->input('value');
-        $search2 =  $request->input('value2');
-        $search3 =  $request->input('value3');
-        $search4 =  $request->input('value3');
+        $search0 =  $request->input('value');
+        $search1 =  $request->input('value2');
+        $search2 =  $request->input('value3');
+        $search3 =  $request->input('value4');
+        $search4 =  $request->input('value5');
+        $search5 =  $request->input('value6');
 
-        $a=[];
-
-        //$result = Compensation::all();
-        //$result->appends(['value' => $search]);
-            
-            // load and search through DB, return data with match
-            if($search!=""){
-                $result = Compensation::select($search, $search2)
-                    ->get();
-                    }   
-                    return ($result); 
+        //loads them into an array
+        $array=[$search0, $search1, $search2, $search3, $search4, $search5];
+        //filter empty fields
+        $searchValues = array_filter($array);
+              
+        // load and search through DB, return data with rows
+        $result = Compensation::select($searchValues)->get();
+                
+        //return ($result);
+        return $result;
+                                
     }
 
 //Upload compensation data via POST request
