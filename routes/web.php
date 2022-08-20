@@ -25,13 +25,10 @@ $router->group(['prefix'=>'/'], function () use ($router){
     $router->get('/compensation-csv', 'CompensationController@import'); 
     $router->post('store/compensation', 'CompensationController@store');    
     $router->put('/compensation/{id}', 'CompensationController@update') ; 
-    $router->delete('/compensation/{id}', 'CompensationController@destroy'); 
     $router->post('/compensation_csv', 'CompensationController@importCompensationData'); 
-    $router->post('/min/{loc}', 'CompensationController@minComp'); 
-    $router->post('/max/{loc}', 'CompensationController@maxComp'); 
-    $router->post('/average/{loc}', 'CompensationController@averageComp'); 
-    $router->post('/retriveComp/{role}', 'CompensationController@retriveComp'); 
-    $router->post('/sortPage', 'CompensationController@pagiSortFil'); 
+    $router->post('/minMaxAvgcomp/{loc}', 'CompensationController@minMaxAvgcomp'); 
+    $router->post('/avgCompRole/{role}', 'CompensationController@avgCompRole'); 
+    $router->get('/sortPage', 'CompensationController@pagiSortFil'); 
     $router->get('/sparce', 'CompensationController@sparce'); 
 
 });

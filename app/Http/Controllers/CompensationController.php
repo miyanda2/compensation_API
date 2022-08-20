@@ -14,7 +14,7 @@ class CompensationController extends Controller
         return ($compensation);
     }
 
-        // store new compensation Data
+        // Add new compensation data to existing record via POST request
     public function store(Request $request){
         try {
             //instantiate
@@ -41,7 +41,7 @@ class CompensationController extends Controller
         }
     }
 
-
+//Update the details of an existing compensation data
     public function update(Request $request, $id)
     {
         try {
@@ -66,7 +66,8 @@ class CompensationController extends Controller
         }
     }
 
-    function minComp($loc)
+    //Retrieve the average, minimum, and maximum compensation per city
+    function minMaxAvgcomp($loc)
     {   
         $a=[];
         $result = Compensation::where('loc', 'LIKE', '%'. $loc. '%')->get('annualSalary');
@@ -85,10 +86,21 @@ class CompensationController extends Controller
                     array_push($a,$string);
                 } 
                 //using the Min function
-                $minimum= min($a);    
+                $minimum= min($a); 
+                
+                //using max function
+                $maximum=max($a);
+
+                //calculate avg
+                $a_count = count($a);
+                $a_sum = array_sum($a);
+                $mean_average = $a_sum / $a_count;
             }
             
-            return "Minimum Compensation for ".$loc ." is -- $" . $minimum. "<br>" . $num. " total city(s) found";
+            return response()->json($loc= [
+                                    'minimum'=> $minimum, 
+                                    'Maximum' =>$maximum, 
+                                    'Average'=>$mean_average],);
     
         }
         catch (\Exception $e){
@@ -97,101 +109,38 @@ class CompensationController extends Controller
     }
 
 
-    function maxComp($loc)
+//Retrieve the average compensation for a given role or roles.
+    function avgCompRole($role)
     {   
         $a=[];
-        $result = Compensation::where('loc', 'LIKE', '%'. $loc. '%')->get('annualSalary');
-        $result_array= json_decode($result, TRUE);
-        $num=0;
-
-        try{
-            foreach ($result_array as $annualSalary)
-            {
-                $num++; 
-            
-                foreach ($annualSalary as $key=>$value)
-                { 
-                    $string = preg_replace('/[^0-9]/', '', $value);
-                    array_push($a,$string);
-                }
-                //using the max function
-                    $maximum = max($a);
-            }
-                return "Maximum Compensation for ".$loc ." is -- $" . $maximum . "<br>" . $num. " total city(s) found";
-        }
-        catch (\Exception $e){
-            return response()->json(['status'=> 'error', 'message' =>$e->getMessage() . " or " . "please check spelling"]);
-        }
-}
-
-    function averageComp($loc)
-    {   
-        $a=[];
-        $result = Compensation::where('loc', 'LIKE', '%'. $loc. '%')->get('annualSalary');
+        $result = Compensation::where('role', 'LIKE', '%'. $role. '%')->get('annualSalary');
         $result_array= json_decode($result, TRUE);
         $num=0;
 
         try{
         foreach ($result_array as $annualSalary)
         {
-        $num++; 
-        
-        foreach ($annualSalary as $key=>$value)
-        {     
-            $string = preg_replace('/[^0-9]/', '', $value);
-            array_push($a,$string);
-        }
-        $a_count = count($a);
-        $a_sum = array_sum($a);
-        $mean_average = $a_sum / $a_count;
-        }
-        echo "Average Compensation for ".$loc ." is $" . $mean_average . "<br>" . $num. " total city(s) found";
-
-    }
-    //catch errors and return
-    catch (\Exception $e){
-        return response()->json(['status'=> 'error', 'message' =>$e->getMessage() . " or " . "please check spelling"]);
-    }
-}
-    //delete given data
-    public function destroy($id)
-    {
-        try {
-            $compensation = Compensation::findOrFail($id);
-            if ($compensation ->delete()){
-                return response()->json(['status'=> 'success', 'message' => 'Compensation deleted  successfully ']);
-            }  
-        }  
-        catch (\Exception $e){
-            return response()->json(['status'=> 'error', 'message' => $e->getMessage() . " or " . "please check spelling"]);
-        }
-    }
-
-   
-  
-    public function retriveComp($role)
-    {   
-        $a=[];
-        $result = Compensation::where('role', 'LIKE', '%'. $role. '%')->get('annualSalary');
-        $result_array= json_decode($result, TRUE);
-        $num=0;
-        try{
-            foreach ($result_array as $annualSalary)
-            {
-                $num++; 
-
-                foreach ($annualSalary as $key=>$value)
-                {
-                    array_push($a,$value);
-                    return ($a) ;
-                }
+            $num++; 
+            
+            foreach ($annualSalary as $key=>$value)
+            {     
+                // $string = preg_replace('/[^0-9]/', '', $value);
+                array_push($a,$value);
             }
+            $a_count = count($a);
+            $a_sum = array_sum($a);
+            $mean_average_role = $a_sum / $a_count;
         }
-        catch (\Exception $e){
-            return response()->json(['status'=> 'error', 'message' => $e->getMessage() . " or " . "please check spelling"]);
+        return response()->json($role=['Role'=> $role, 'Count' =>$a_count, 'Average'=>$mean_average_role]);
+
+        }
+        //catch errors and return
+            catch (\Exception $e){
+                return response()->json(['status'=> 'error', 'message' =>$e->getMessage() . " or " . "please check spelling"]);
         }
     }
 
+ //List compensation data via API GET request with the ability to paginate data, and filter and sort or more fields/attributes
     public function pagiSortFil(Request $request)
     {
         try{
@@ -215,6 +164,7 @@ class CompensationController extends Controller
         }
     }
 
+    //Fetch a single record via GET request. Return a sparce fieldset (e.g. /compensation_data?fields=first_name,last_name,salary)
     public function sparce(Request $request)
     {
         //requested search fields
@@ -224,33 +174,19 @@ class CompensationController extends Controller
         $search4 =  $request->input('value3');
 
         $a=[];
-        //get array key from a sample (index 1 element) output
-        $key = Compensation::findOrFail(1);
-        $key= json_decode($key, TRUE);
-        $num=0;
-        
-            foreach ($key as $val){
-                    $num++; 
-                    
-                    foreach ($key as $keys=>$value)
-                    {
-                        array_push($a,$keys);    
-                    }
-            }
+
+        //$result = Compensation::all();
+        //$result->appends(['value' => $search]);
+            
             // load and search through DB, return data with match
             if($search!=""){
-                    $result = Compensation::where($a['4'], 'LIKE', "%{$search}%")
-                                            ->where($a['5'], 'LIKE', "%{$search2}%")
-                                            ->where($a['6'], 'LIKE', "%{$search3}%")
-                                            ->where($a['7'], 'LIKE', "%{$search4}%")->get();
-                    }    
-                   
-                    return ($result);
-        
-        
+                $result = Compensation::select($search, $search2)
+                    ->get();
+                    }   
+                    return ($result); 
     }
 
-
+//Upload compensation data via POST request
     public function importCompensationData(Request $request) {
         $data           =       array();
 
