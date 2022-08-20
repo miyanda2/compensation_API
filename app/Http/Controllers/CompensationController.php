@@ -41,6 +41,7 @@ class CompensationController extends Controller
         }
     }
 
+    
 //Update the details of an existing compensation data
     public function update(Request $request, $id)
     {
@@ -65,6 +66,7 @@ class CompensationController extends Controller
             return response()->json(['status'=> 'error', 'message' => $e->getMessage()]);
         }
     }
+
 
     //Retrieve the average, minimum, and maximum compensation per city
     function minMaxAvgcomp($loc)
@@ -152,6 +154,7 @@ class CompensationController extends Controller
         }
     }
 
+
  //List compensation data via API GET request with the ability to paginate data, and filter and sort or more fields/attributes
     public function pagiSortFil(Request $request)
     {
@@ -175,6 +178,7 @@ class CompensationController extends Controller
             return response()->json(['status'=> 'error', 'message' => $e->getMessage() . " or " . "please check spelling"]);
         }
     }
+
 
 //Fetch a single record via GET request. Return a sparce fieldset (e.g. /compensation_data?fields=first_name,last_name,salary)
     public function sparce(Request $request)

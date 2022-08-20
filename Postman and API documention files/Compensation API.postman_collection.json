@@ -1,0 +1,337 @@
+{
+	"info": {
+		"_postman_id": "ada516ca-b87c-48e2-b510-93b58e902831",
+		"name": "Compensation API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18190819"
+	},
+	"item": [
+		{
+			"name": "paginateSortFilter",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sortPage/?value=Nashville",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sortPage",
+						""
+					],
+					"query": [
+						{
+							"key": "value",
+							"value": "Nashville"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sparce field",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sparce?value=industry&value2=loc&value3=age",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sparce"
+					],
+					"query": [
+						{
+							"key": "value",
+							"value": "industry"
+						},
+						{
+							"key": "value2",
+							"value": "loc"
+						},
+						{
+							"key": "value3",
+							"value": "age"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Compensation Detail",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{baseUrl}}/store/compensation?age&industry&role&annualSalary&currencyType&loc&yearOfExperince&additionalContents&other",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"store",
+						"compensation"
+					],
+					"query": [
+						{
+							"key": "age",
+							"value": null
+						},
+						{
+							"key": "industry",
+							"value": null
+						},
+						{
+							"key": "role",
+							"value": null
+						},
+						{
+							"key": "annualSalary",
+							"value": null
+						},
+						{
+							"key": "currencyType",
+							"value": null
+						},
+						{
+							"key": "loc",
+							"value": null
+						},
+						{
+							"key": "yearOfExperince",
+							"value": null
+						},
+						{
+							"key": "additionalContents",
+							"value": null
+						},
+						{
+							"key": "other",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update compensation data",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{baseUrl}}/compensation/1771?age=30&industry=test&role=test&annualSalary=test&currencyType=test&loc=test&yearOfExperince=test&additionalContents=test&other=test",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"",
+						"compensation",
+						"1771"
+					],
+					"query": [
+						{
+							"key": "age",
+							"value": "30"
+						},
+						{
+							"key": "industry",
+							"value": "test"
+						},
+						{
+							"key": "role",
+							"value": "test"
+						},
+						{
+							"key": "annualSalary",
+							"value": "test"
+						},
+						{
+							"key": "currencyType",
+							"value": "test"
+						},
+						{
+							"key": "loc",
+							"value": "test"
+						},
+						{
+							"key": "yearOfExperince",
+							"value": "test"
+						},
+						{
+							"key": "additionalContents",
+							"value": "test"
+						},
+						{
+							"key": "other",
+							"value": "test"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Min Max Avg compensation per (city)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{baseUrl}}/minMaxAvgcomp/Nashvill",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"minMaxAvgcomp",
+						"Nashvill"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrive compensation (role)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{baseUrl}}/avgCompRole/office manager",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"avgCompRole",
+						"office manager"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload csv",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "csv_file",
+							"type": "file",
+							"src": "SCNrBUUfK/compensation_data.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/compensation_csv",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"compensation_csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List all Compensation Details",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{baseUrl}}/view/compensation",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"view",
+						"compensation"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://127.0.0.1:8000"
+		}
+	]
+}
