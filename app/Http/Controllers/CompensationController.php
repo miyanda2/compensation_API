@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Compensation;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class CompensationController extends Controller
 
@@ -41,7 +42,7 @@ class CompensationController extends Controller
         }
     }
 
-    
+
 //Update the details of an existing compensation data
     public function update(Request $request, $id)
     {
@@ -69,13 +70,25 @@ class CompensationController extends Controller
 
 
     //Retrieve the average, minimum, and maximum compensation per city
-    function minMaxAvgcomp($loc)
+    function minMaxAvgcomp(Request $request)
     {   
+      
+        $loc = $request->loc;
+        $validator= $this->validate(
+            $request, [
+                'loc' => 'required',
+            ]
+         );
+         if ($validator != True) {
+            return redirect($request->path()) // or some path
+                ->withErrors($validator)
+                ->withInput();
+        }
+        else{
         $a=[];
         $result = Compensation::where('loc', 'LIKE', '%'. $loc. '%')->get('annualSalary');
         $result_array= json_decode($result, TRUE);
         $num=0;
-        try{
             foreach ($result_array as $annualSalary)
             {
                 //counter
@@ -103,11 +116,11 @@ class CompensationController extends Controller
                                     'minimum'=> $minimum, 
                                     'Maximum' =>$maximum, 
                                     'Average'=>$mean_average],);
-    
-        }
-        catch (\Exception $e){
-            return response()->json(['status'=> 'error', 'message' =>$e->getMessage() . " or " . "please check spelling"]);
-        }
+    }
+        
+        // catch (\Exception $e){
+        //     return response()->json(['status'=> 'error', 'message' =>$e->getMessage() . " or " . "please check spelling"]);
+        // }
     }
 
 
@@ -156,18 +169,23 @@ class CompensationController extends Controller
 
 
  //List compensation data via API GET request with the ability to paginate data, and filter and sort or more fields/attributes
-    public function pagiSortFil(Request $request)
+    public function paginateFilt(Request $request)
     {
         try{
-            $search =  $request->input('value');
-            if($search!=""){
-                $sorted = Compensation::where(function ($query) use ($search){
-                    $query->where('loc', 'like', '%'.$search.'%')
-                        ->orWhere('currencyType', 'like', '%'.$search.'%')
-                        ->orWhere('age', 'like', '%'.$search.'%');
+            $search0 =  $request->input('city');
+            $search1 =  $request->input('currencyType');
+            $search2 =  $request->input('role');
+            //$search3 =  $request->input('value');
+            //$search =  $request->input('value');
+            if($search0!=""){
+                $sorted = Compensation::where(function ($query) use ($search0, $search1, $search2){
+                    $query->where('loc', 'like', '%'.$search0.'%')
+                        ->Where('currencyType', 'like', '%'.$search1.'%')
+                        ->Where('role', 'like', '%'.$search2.'%');
                 })
-                ->paginate(50);
-                $sorted->appends(['value' => $search]);
+                //argument 10(10 entries per page)
+                ->paginate(10);
+                $sorted->appends(['value' => 'data']);
             }
             else{
                     $sorted = Compensation::paginate(10);
@@ -203,6 +221,22 @@ class CompensationController extends Controller
         return $result;
                                 
     }
+//sort
+    public function sortRequest(Request $request)
+    {
+
+        //requested sort fields
+        $sortWord =  $request->input('sortWord');
+        $switch =  $request->input('value');
+        if ($sortWord !=''){
+
+            //check through using $softword to sort, $switch btw asce and desc
+            $result = Compensation::orderBy($sortWord, $switch)->get();
+                    
+            //return ($result);
+            return $result;
+        }                      
+    }
 
 //Upload compensation data via POST request
     public function importCompensationData(Request $request) {
@@ -219,7 +253,6 @@ class CompensationController extends Controller
         foreach ($rows as $row) {
 
                     $compensationData = array(
-
                         "age" => $row["1"],
                         "industry" => $row["2"],
                         "role" => $row["3"],
