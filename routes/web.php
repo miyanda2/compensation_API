@@ -21,11 +21,10 @@ $router->get('/', function () use ($router) {
 
 
 $router->group(['prefix'=>'/'], function () use ($router){
-    $router->get('view/compensation', 'CompensationController@index'); 
-    $router->get('/compensation-csv', 'CompensationController@import'); 
+    $router->get('view/compensation', 'CompensationController@index');  
     $router->post('store/compensation', 'CompensationController@store');    
     $router->put('/compensation/{id}', 'CompensationController@update') ; 
-    $router->post('/compensation_csv', 'CompensationController@importCompensationData'); 
+    $router->post('/upload_csv', 'CompensationController@importCompensationData'); 
     $router->get('/minMaxAvgcomp', 'CompensationController@minMaxAvgcomp'); 
     $router->post('/avgCompRole/{role}', 'CompensationController@avgCompRole'); 
     $router->get('/paginate', 'CompensationController@paginateFilt'); 

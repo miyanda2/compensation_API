@@ -16,19 +16,19 @@ class CreateCompensationTable extends Migration
         Schema::create('compensation', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->integer('employee_id')->unsigned();   
+            $table->integer('employee_id')->unsigned()->nullable();   
             $table->string('timeUploaded')->nullable();
             $table->string('age');
             $table->string('industry')->nullable();
             $table->string('role');
-            $table->bigInteger('annualSalary');
+            $table->bigInteger('annualSalary')->nullable();
             $table->string('currencyType');
             $table->string('loc')->nullable();
             $table->string('yearOfExperince');
             $table->string('additionalContents')->length(1000)->nullable();
             $table->string('other')->length(1000)->nullable();
             
-            $table->foreign('employee_id')->references('id')->on('employees');
+            $table->foreign('employee_id')->references('id')->on('employees') ;
         });
     }
 

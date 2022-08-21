@@ -10,8 +10,9 @@ class Compensation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'employee_id',
+        
         'timeUploaded',
+        "employee_id",
         'age',
         'industry',
         'role',

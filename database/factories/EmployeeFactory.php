@@ -13,8 +13,8 @@ class EmployeeFactory extends Factory
     public function definition(): array
     {
     	return [
-    	    'firstName' => $this->faker->name(),
-            'lastName' => $this->faker->name(),
+    	    'fullName' => $this->faker->name(),
+            // 'lastName' => $this->faker->name(),
             'email' => $this->faker->email(),
             'eId' => Str::random(5),
             

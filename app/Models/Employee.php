@@ -10,8 +10,7 @@ class Employee extends Model
     use HasFactory;
 
     protected $fillable = [
-        'firstName',
-        'lastName',
+        'fullName',
         'email',
         'eId',
     ];
@@ -20,6 +19,6 @@ class Employee extends Model
 
 public function compensation()
 {
-    return $this->hasMany(Compensation::class, 'employee_id');
+    return $this->belongsToMany(Employee::class, 'employee_id');
 }
  }
