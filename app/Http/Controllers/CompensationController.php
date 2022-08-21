@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Compensation;
 use Illuminate\Http\Request;
-use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class CompensationController extends Controller
 
@@ -240,37 +239,92 @@ class CompensationController extends Controller
 
 //Upload compensation data via POST request
     public function importCompensationData(Request $request) {
-        $data           =       array();
-
-        $id = "";
-
+        $compensationData=array();
+        // $id = "";
         $file = $request->file("csv_file");
+        if ($file) {
         $csvData = file_get_contents($file);
 
         $rows = array_map("str_getcsv", explode("\n", $csvData));
         $header = array_shift($rows);
-
+// dd($rows);
         foreach ($rows as $row) {
-
-                    $compensationData = array(
-                        "age" => $row["1"],
-                        "industry" => $row["2"],
-                        "role" => $row["3"],
-                        "annualSalary" => $row["4"],
-                        "currencyType" => $row["5"],
-                        "loc" => $row["6"],
-                        "yearOfExperince" => $row["7"],
-                        "additionalContents" => $row["8"],
-                        "other" => $row["9"],
+                // try{
+                    dd($row);
+                        $j = 1;
+                        $compensationData = array(
+                        "employee_id"=>strval($j),
+                        "timeUploaded"=>,
+                        "age" =>$row,
+                        "industry" =>$row,
+                        "role" =>$row["3"],
+                        "annualSalary" =>preg_replace('/[^0-9]/', '', $row["4"]),
+                        "currencyType" =>$row["5"],
+                        "loc" =>$row["6"],
+                        "yearOfExperince" =>$row["7"],
+                        "additionalContents" =>$row["8"],
+                        "other" =>$row["9"],
+                       
                     );
+
+                        $compensationData = array_filter($compensationData);
+                        $j++;
+                    // dd ($compensationData);
                         $compensation = Compensation::create($compensationData);
-                        if(!is_null($compensation)) {
-                            $data["status"]     =       "success";
-                            $data["message"]    =       "Data imported successfully";
-                        }                        
-        }
+                    
+                        
+                            //throw $th;
+                        }
+                            return response()->json([
+                                'message' => "$j records successfully uploaded"
+                                ]);
+                        // if(!is_null($compensation)) {
+                        //     $data["status"]     =       "success";
+                        //     $data["message"]    =       "Data imported successfully";
+                        // }  
+                    }  
+                }                    
+        //    catch (\Exception $e) {return response()->json(['status'=> 'error', 'message' => 'there was an error']);
+        //                 }
 
-        return $data["status"];
-    }
-
+                        // else {
+                        //     //no file was uploaded
+                        //     return ('No file was uploaded');
+                        //     }
+                         
 }
+    // public function importCompensationData(Request $request) {
+    //     $data=array();
+
+    //     $id = "";
+
+    //     $file = $request->file("csv_file");
+    //     $csvData = file_get_contents($file);
+
+    //     $rows = array_map("str_getcsv", explode("\n", $csvData));
+    //     $header = array_shift($rows);
+
+    //     foreach ($rows as $row) {
+
+    //                 $compensationData = array(
+    //                     "age" => $row["1"],
+    //                     "industry" => $row["2"],
+    //                     "role" => $row["3"],
+    //                     "annualSalary" => $row["4"],
+    //                     "currencyType" => $row["5"],
+    //                     "loc" => $row["6"],
+    //                     "yearOfExperince" => $row["7"],
+    //                     "additionalContents" => $row["8"],
+    //                     "other" => $row["9"],
+    //                 );
+    //                     $compensation = Compensation::create($compensationData);
+    //                     if(!is_null($compensation)) {
+    //                         $data["status"]     =       "success";
+    //                         $data["message"]    =       "Data imported successfully";
+    //                     }                        
+    //     }
+
+    //     return $data["status"];
+    
+
+

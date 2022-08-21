@@ -15,19 +15,20 @@ class CreateCompensationTable extends Migration
     {
         Schema::create('compensation', function (Blueprint $table) {
             $table->id();
-            //$table->Integer('employee_id')->unsigned()->nullable();
             $table->timestamps();
+            $table->integer('employee_id')->unsigned();   
+            $table->string('timeUploaded')->nullable();
             $table->string('age');
-            $table->string('industry');
+            $table->string('industry')->nullable();
             $table->string('role');
-            $table->string('annualSalary');
+            $table->bigInteger('annualSalary');
             $table->string('currencyType');
-            $table->string('loc');
+            $table->string('loc')->nullable();
             $table->string('yearOfExperince');
-            $table->string('additionalContents', 1000);
-            $table->string('other');
+            $table->string('additionalContents')->length(1000)->nullable();
+            $table->string('other')->length(1000)->nullable();
             
-            //$table->foreign('employee_id')->references('id')->on('employees');
+            $table->foreign('employee_id')->references('id')->on('employees');
         });
     }
 
@@ -38,6 +39,6 @@ class CreateCompensationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('attendances');
+        Schema::dropIfExists('compensation');
     }
 }

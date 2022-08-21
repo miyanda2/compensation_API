@@ -10,6 +10,8 @@ class Compensation extends Model
     use HasFactory;
 
     protected $fillable = [
+        'employee_id',
+        'timeUploaded',
         'age',
         'industry',
         'role',
@@ -25,6 +27,6 @@ class Compensation extends Model
 
 public function employee()
 {
-    //return $this->belongsTo(Employee::class, 'employee_id');
+   return $this->belongsTo(Employee::class, 'employee_id');
 }
  }
