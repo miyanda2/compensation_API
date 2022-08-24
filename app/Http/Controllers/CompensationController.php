@@ -136,7 +136,7 @@ class CompensationController extends Controller
         
         //search $role and return its annual salary
         $result = Compensation::where('role', 'LIKE', '%'. $role. '%')->get('annualSalary');
-        
+        // dd($result);
         //decode to json
         $result_array= json_decode($result, TRUE);
         $num=0;
@@ -176,10 +176,8 @@ class CompensationController extends Controller
             $search0 =  $request->input('city');
             $search1 =  $request->input('currencyType');
             $search2 =  $request->input('role');
-            //$search3 =  $request->input('value');
-            //$search =  $request->input('value');
             if($search0!=""){
-                $sorted = Compensation::where(function ($query) use ($search0, $search1, $search2){
+                $sorted = Compensation::with('employee')->where(function ($query) use ($search0, $search1, $search2){
                     $query->where('loc', 'like', '%'.$search0.'%')
                         ->Where('currencyType', 'like', '%'.$search1.'%')
                         ->Where('role', 'like', '%'.$search2.'%');
@@ -222,6 +220,7 @@ class CompensationController extends Controller
         return $result;
                                 
     }
+
 //sort
     public function sortRequest(Request $request)
     {
@@ -233,6 +232,7 @@ class CompensationController extends Controller
 
             //check through using $softword to sort, $switch btw asce and desc
             $result = Compensation::orderBy($sortWord, $switch)->get();
+            
                     
             //return ($result);
             return $result;
@@ -289,38 +289,5 @@ class CompensationController extends Controller
 
                          
 
-    // public function importCompensationData(Request $request) {
-    //     $data=array();
-
-    //     $id = "";
-
-    //     $file = $request->file("csv_file");
-    //     $csvData = file_get_contents($file);
-
-    //     $rows = array_map("str_getcsv", explode("\n", $csvData));
-    //     $header = array_shift($rows);
-
-    //     foreach ($rows as $row) {
-
-    //                 $compensationData = array(
-    //                     "age" => $row["1"],
-    //                     "industry" => $row["2"],
-    //                     "role" => $row["3"],
-    //                     "annualSalary" => $row["4"],
-    //                     "currencyType" => $row["5"],
-    //                     "loc" => $row["6"],
-    //                     "yearOfExperince" => $row["7"],
-    //                     "additionalContents" => $row["8"],
-    //                     "other" => $row["9"],
-    //                 );
-    //                     $compensation = Compensation::create($compensationData);
-    //                     if(!is_null($compensation)) {
-    //                         $data["status"]     =       "success";
-    //                         $data["message"]    =       "Data imported successfully";
-    //                     }                        
-    //     }
-
-    //     return $data["status"];
-    
 
 

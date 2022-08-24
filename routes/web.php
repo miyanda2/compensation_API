@@ -21,15 +21,28 @@ $router->get('/', function () use ($router) {
 
 
 $router->group(['prefix'=>'/'], function () use ($router){
-    $router->get('view/compensation', 'CompensationController@index');  
-    $router->post('store/compensation', 'CompensationController@store');    
-    $router->put('/compensation/{id}', 'CompensationController@update') ; 
-    $router->post('/upload_csv', 'CompensationController@importCompensationData'); 
-    $router->get('/minMaxAvgcomp', 'CompensationController@minMaxAvgcomp'); 
-    $router->post('/avgCompRole/{role}', 'CompensationController@avgCompRole'); 
-    $router->get('/paginate', 'CompensationController@paginateFilt'); 
-    $router->get('/sparce', 'CompensationController@sparce'); 
+    //paginate and filter accros data
+    $router->get('/paginate', 'CompensationController@paginateFilt');
+    //view all Data
+    $router->get('viewAll/compensationData', 'CompensationController@index');  
+    //sort data 
     $router->get('/sort', 'CompensationController@sortRequest'); 
+    
+    $router->post('store/compensationData', 'CompensationController@store'); 
+
+    $router->put('/compensation/{id}', 'CompensationController@update') ; 
+
+    $router->post('/upload_csv', 'CompensationController@importCompensationData');
+
+    $router->get('/minMaxAvgcomp', 'CompensationController@minMaxAvgcomp'); 
+
+    $router->post('/avgCompRole/{role}', 'CompensationController@avgCompRole'); 
+
+     
+
+    $router->get('/sparce', 'CompensationController@sparce');
+
+    
 
 });
 
