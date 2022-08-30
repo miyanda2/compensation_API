@@ -3,18 +3,71 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Compensation;
+use Carbon\Carbon;
 use App\Models\Employee;
+use League\Fractal\Manager;
+use App\Models\Compensation;
 use Illuminate\Http\Request;
 
 class CompensationController extends Controller
 
 {   
+
     //Get all Compensation Data
     public function index(){
         $compensation = Compensation::with('employee')->get();
-        return ($compensation);
+
+        if (!empty($compensation->count())) {
+            foreach ($compensation as $key => $comp) {
+                $data[$key] = [
+                    'id' => $comp->id,
+                    'employee_id' => $comp->employee_id,
+                    'timeUploaded' => $comp->timeUploaded,
+                    'age' => $comp->age,
+                    'industry' => $comp->industry,
+                    'role' => $comp->role,
+                    'annualSalary' => $comp->annualSalary,
+                    'currencyType' => $comp->currencyType,
+                    'loc' => $comp->loc,
+                    'yearOfExperince' => $comp->yearOfExperince,
+                    'additionalContents' => $comp->additionalContents,
+                    'other' => $comp->other,
+                    'create_at' => Carbon::createFromFormat('Y-m-d H:i:s', $comp->created_at)->format('d/M/Y H:i:s'),
+                    'update_at' => Carbon::createFromFormat('Y-m-d H:i:s', $comp->updated_at)->format('d/M/Y H:i:s'),
+                    ];
+                    
+                   
+                    if (count($comp->employee)!= 0) {
+                        foreach ($comp as $key => $emp) {
+                            
+                            $data[$key]['emp'][] = [
+                                //dd($emp['eid']),
+                                'fullName' => $comp->employee->fullName,
+                                // dd($comp->employee->fullName),
+                                'email' => $comp->employee->email,
+                                'eid' => $comp->employee->eid,
+                                'create_at' => Carbon::createFromFormat('Y-m-d H:i:s', $comp->employee->created_at)->format('d/M/Y H:i:s'),
+                                'update_at' => Carbon::createFromFormat('Y-m-d H:i:s', $comp->employee->updated_at)->format('d/M/Y H:i:s'),
+                            ];
+                            // dd($emp);
+                        }             
+                     }
+                     else {
+                        $data[$key]['emp'] = '';
+                    }
+       
+            }
+            return response()->json([
+                'code' => 'SUCCESS',
+                'data' => $data
+            ]);
+        }  
+        else {
+            return response()->json([
+                'code' => 'FAILED',
+            ]);
     }
+}
 
         // Add new compensation data to existing record via POST request
     public function store(Request $request){

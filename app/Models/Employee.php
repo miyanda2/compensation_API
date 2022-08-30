@@ -17,7 +17,7 @@ class Employee extends Model
 
 
 
-public function compensation()
+public function employee()
 {
     return $this->belongsToMany(Employee::class, 'employee_id');
 }
